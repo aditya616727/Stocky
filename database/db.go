@@ -29,6 +29,10 @@ func Connect(cfg *config.DatabaseConfig) error {
 	return nil
 }
 
-func getDSN() *sql.DB {
+func GetDSN() *sql.DB {
+	return DB
+}
+
+func GetDB() *sql.DB {
 	return DB
 }
