@@ -4,8 +4,8 @@ import (
 	"os"
 
 	"github.com/aditya616727/stocky/config"
-
 	"github.com/aditya616727/stocky/database"
+	"github.com/aditya616727/stocky/repository"
 
 	"github.com/sirupsen/logrus"
 )
@@ -26,6 +26,19 @@ func main() {
 		logrus.Fatal("failed to connect to database ")
 
 	}
+	defer database.DB.Close()
+
+	db := database.GetDB()
+
+	//initilize repo
+	RewardRepo := repository.NewRewardRepository(db)
+	stockPriceRepo := repository.NewStockPriceRepository(db)
+	ledgerRepo := repository.NewLedgerRepository(db)
+	holdingRepo := repository.NewHoldingRepository(db)
+	userRepo := repository.NewUserRepository(db)
+
+	stockPriceService := services.NewStockPriceService(stockPriceRepo)
+
 }
 
 func initLogger() {

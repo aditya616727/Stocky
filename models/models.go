@@ -67,7 +67,7 @@ type StockPrice struct {
 
 type UserHolding struct {
 	ID            int
-	UserId        string
+	UserID        string
 	StockSymbol   string
 	TotalQuantity float64
 	AverageCost   float64
