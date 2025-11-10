@@ -1,0 +1,86 @@
+```
+  _____ _             _            
+ / ____| |           | |           
+| (___ | |_ ___   ___| | ___   _   
+ \___ \| __/ _ \ / __| |/ / | | |  
+ ____) | || (_) | (__|   <| |_| |  
+|_____/ \__\___/ \___|_|\_\\__, |  
+                            __/ |  
+                           |___/   
+
+╔═══════════════════════════════════════════════════════════╗
+║      Stock Reward System API - Built with Go & Gin       ║
+╚═══════════════════════════════════════════════════════════╝
+
+🎯 Features:
+   ✓ 5 REST API Endpoints
+   ✓ Double-Entry Ledger System
+   ✓ Hourly Stock Price Updates
+   ✓ Swagger UI Documentation
+   ✓ PostgreSQL with GORM
+   ✓ Idempotency Protection
+   ✓ Fractional Shares Support
+   ✓ Complete Edge Case Handling
+
+📊 Tech Stack:
+   • Go 1.21+
+   • Gin Framework
+   • PostgreSQL
+   • GORM ORM
+   • Logrus Logging
+   • Swagger/OpenAPI
+
+🚀 Quick Start:
+   1. Create database: psql -U postgres -c "CREATE DATABASE assignment;"
+   2. Install deps: go mod download
+   3. Generate docs: ~/go/bin/swag init
+   4. Run server: go run main.go
+   5. Visit: http://localhost:8080/swagger/index.html
+
+📚 Documentation:
+   • README.md           - Complete guide
+   • QUICKSTART.md       - 5-step setup
+   • API_DOCS.md         - API reference
+   • ARCHITECTURE.md     - System design
+   • PROJECT_SUMMARY.md  - Executive summary
+
+🧪 Testing:
+   • Swagger UI: http://localhost:8080/swagger/index.html
+   • Postman: Import Stocky.postman_collection.json
+   • CLI: ./test_api.sh
+
+📦 Database Schema:
+   ┌─────────────────┐
+   │ stock_rewards   │  User rewards with idempotency
+   └────────┬────────┘
+            │
+   ┌────────▼────────┐
+   │ ledger_entries  │  Double-entry bookkeeping
+   └─────────────────┘  (STOCK_CREDIT, CASH_DEBIT, FEE_DEBIT)
+   
+   ┌─────────────────┐
+   │ stock_prices    │  Hourly updated prices
+   └─────────────────┘
+
+🔐 Edge Cases Handled:
+   ✓ Duplicate rewards (idempotency keys)
+   ✓ Rounding errors (NUMERIC types)
+   ✓ Stale prices (caching + updates)
+   ✓ Missing prices (auto-generation)
+   ✓ Fractional shares (6 decimal places)
+
+📈 Scalability:
+   • Stateless design → Horizontal scaling
+   • Indexed queries → Fast lookups
+   • Connection pooling → Efficient DB usage
+   • Background services → Async processing
+
+═══════════════════════════════════════════════════════════
+
+Author: Assignment Submission
+Version: 1.0.0
+License: MIT
+Date: November 10, 2025
+
+═══════════════════════════════════════════════════════════
+```

@@ -1,93 +1,114 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
-type User struct {
-	ID        int
-	UserID    string
-	Name      string
-	Email     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+// StockReward represents a reward event
+type StockReward struct {
+	ID             int64     `json:"id" gorm:"primaryKey"`
+	UserID         string    `json:"user_id" gorm:"type:varchar(100);not null;index"`
+	StockSymbol    string    `json:"stock_symbol" gorm:"type:varchar(20);not null;index"`
+	Quantity       float64   `json:"quantity" gorm:"type:numeric(18,6);not null"`
+	RewardedAt     time.Time `json:"rewarded_at" gorm:"not null;index"`
+	IdempotencyKey string    `json:"idempotency_key" gorm:"type:varchar(100);uniqueIndex"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-type Reward struct {
-	ID               int
-	RewardID         string
-	UserID           string
-	StockSymbol      string
-	Quantity         float64
-	PricePerShare    float64
-	TotalCost        float64
-	BorkerageFee     float64
-	STTPFee          float64
-	GSTFee           float64
-	SEBICharges      float64
-	StampDuty        float64
-	TotalFees        float64
-	TotalCompanyCost float64
-	RewardedAt       time.Time
-	CreatedAt        time.Time
-}
-
+// LedgerEntry represents double-entry bookkeeping
 type LedgerEntry struct {
-	ID          int
-	EntryID     string
-	RewardID    string
-	AccountType string
-	StockSymbol string
-	Debit       float64
-	Credit      float64
-	BalanceType string
-	Quantity    *float64
-	Description string
-	CreatedAt   time.Time
+	ID          int64     `json:"id" gorm:"primaryKey"`
+	RewardID    int64     `json:"reward_id" gorm:"not null;index"`
+	EntryType   string    `json:"entry_type" gorm:"type:varchar(50);not null"` // STOCK_CREDIT, CASH_DEBIT, FEE_DEBIT
+	StockSymbol string    `json:"stock_symbol" gorm:"type:varchar(20)"`
+	Quantity    float64   `json:"quantity" gorm:"type:numeric(18,6)"`
+	Amount      float64   `json:"amount" gorm:"type:numeric(18,4)"` // INR amount
+	Description string    `json:"description" gorm:"type:text"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
-const (
-	AccountTypeStockAsset     = "STOCK_ASSET"
-	AccountTypeCashOutflow    = "CASH_OUTFLOW"
-	AccountTypeFeeExpense     = "FEE_EXPENSE"
-	AccountTypeStockLiability = "STOCK_LIABLITY"
-)
-
-const (
-	BalanceTypeStockUnits = "STOCK_UNITS"
-	BalanceTypeINR        = "INR"
-)
-
+// StockPrice represents current stock prices
 type StockPrice struct {
-	ID        int
-	Symbol    string
-	Price     float64
-	Currency  string
-	FetchedAt time.Time
-	CreatedAt time.Time
+	ID          int64     `json:"id" gorm:"primaryKey"`
+	StockSymbol string    `json:"stock_symbol" gorm:"type:varchar(20);uniqueIndex;not null"`
+	Price       float64   `json:"price" gorm:"type:numeric(18,4);not null"`
+	UpdatedAt   time.Time `json:"updated_at" gorm:"index"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
-type UserHolding struct {
-	ID            int
-	UserID        string
-	StockSymbol   string
-	TotalQuantity float64
-	AverageCost   float64
-	TotalCost     float64
-	UpdatedAt     time.Time
+// UserPortfolio represents aggregated user holdings
+type UserPortfolio struct {
+	UserID       string  `json:"user_id"`
+	StockSymbol  string  `json:"stock_symbol"`
+	TotalShares  float64 `json:"total_shares"`
+	CurrentPrice float64 `json:"current_price"`
+	CurrentValue float64 `json:"current_value"`
 }
 
-type Idempotancekey struct {
-	ID              int
-	Idempotancekey  string
-	RequestPayload  string
-	ResponsePayload string
-	Status          string
-	CreatedAt       time.Time
-	CompletedAt     *time.Time
-	ExpiresAt       *time.Time
+// RewardRequest API request for creating reward
+type RewardRequest struct {
+	UserID         string    `json:"user_id" binding:"required" example:"user123"`
+	StockSymbol    string    `json:"stock_symbol" binding:"required" example:"RELIANCE"`
+	Quantity       float64   `json:"quantity" binding:"required,gt=0" example:"10.5"`
+	RewardedAt     time.Time `json:"rewarded_at" example:"2025-11-10T10:00:00Z"`
+	IdempotencyKey string    `json:"idempotency_key" example:"reward-123-456"`
 }
 
-const (
-	IdempotancyStatusProcessing = "PROCESSING"
-	IdempotancyStatusCompleted  = "COMPLETED"
-	IdempotancyStatusFailed     = "FAILED"
-)
+// RewardResponse API response for reward creation
+type RewardResponse struct {
+	ID           int64     `json:"id" example:"1"`
+	UserID       string    `json:"user_id" example:"user123"`
+	StockSymbol  string    `json:"stock_symbol" example:"RELIANCE"`
+	Quantity     float64   `json:"quantity" example:"10.5"`
+	RewardedAt   time.Time `json:"rewarded_at" example:"2025-11-10T10:00:00Z"`
+	CurrentPrice float64   `json:"current_price" example:"2450.75"`
+	CurrentValue float64   `json:"current_value" example:"25732.88"`
+}
+
+// TodayStocksResponse API response for today's stocks
+type TodayStocksResponse struct {
+	UserID  string        `json:"user_id" example:"user123"`
+	Date    string        `json:"date" example:"2025-11-10"`
+	Rewards []StockReward `json:"rewards"`
+}
+
+// HistoricalINRResponse API response for historical INR values
+type HistoricalINRResponse struct {
+	UserID string          `json:"user_id" example:"user123"`
+	Daily  []DailyINRValue `json:"daily"`
+}
+
+// DailyINRValue represents INR value for a specific day
+type DailyINRValue struct {
+	Date       string  `json:"date" example:"2025-11-09"`
+	TotalValue float64 `json:"total_value" example:"125000.50"`
+}
+
+// StatsResponse API response for user stats
+type StatsResponse struct {
+	UserID                string          `json:"user_id" example:"user123"`
+	TodayRewards          []StockQuantity `json:"today_rewards"`
+	CurrentPortfolioValue float64         `json:"current_portfolio_value" example:"250000.75"`
+}
+
+// StockQuantity represents quantity by stock symbol
+type StockQuantity struct {
+	StockSymbol string  `json:"stock_symbol" example:"RELIANCE"`
+	Quantity    float64 `json:"quantity" example:"15.5"`
+}
+
+// PortfolioResponse API response for portfolio
+type PortfolioResponse struct {
+	UserID     string          `json:"user_id" example:"user123"`
+	Holdings   []HoldingDetail `json:"holdings"`
+	TotalValue float64         `json:"total_value" example:"250000.75"`
+}
+
+// HoldingDetail represents individual stock holding
+type HoldingDetail struct {
+	StockSymbol  string  `json:"stock_symbol" example:"RELIANCE"`
+	TotalShares  float64 `json:"total_shares" example:"25.5"`
+	CurrentPrice float64 `json:"current_price" example:"2450.75"`
+	CurrentValue float64 `json:"current_value" example:"62489.13"`
+}

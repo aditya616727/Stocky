@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "stocky-api-collection",
+		"name": "Stocky API",
+		"description": "Stock Reward System API - Complete collection of all endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Rewards",
+			"item": [
+				{
+					"name": "Create Reward",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"user123\",\n  \"stock_symbol\": \"RELIANCE\",\n  \"quantity\": 10.5,\n  \"rewarded_at\": \"2025-11-10T10:00:00Z\",\n  \"idempotency_key\": \"reward-user123-reliance-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reward"
+							]
+						},
+						"description": "Record that a user has been rewarded X shares of a stock. Uses idempotency key to prevent duplicate rewards."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reward - TCS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"user123\",\n  \"stock_symbol\": \"TCS\",\n  \"quantity\": 5.25,\n  \"rewarded_at\": \"2025-11-10T11:30:00Z\",\n  \"idempotency_key\": \"reward-user123-tcs-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reward"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reward - INFOSYS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"user123\",\n  \"stock_symbol\": \"INFOSYS\",\n  \"quantity\": 8.0,\n  \"rewarded_at\": \"2025-11-09T14:00:00Z\",\n  \"idempotency_key\": \"reward-user123-infosys-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reward"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Reward - Duplicate Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"user123\",\n  \"stock_symbol\": \"RELIANCE\",\n  \"quantity\": 10.5,\n  \"rewarded_at\": \"2025-11-10T10:00:00Z\",\n  \"idempotency_key\": \"reward-user123-reliance-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reward"
+							]
+						},
+						"description": "Test duplicate detection - should return 409 Conflict"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Today's Stocks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/today-stocks/user123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"today-stocks",
+								"user123"
+							]
+						},
+						"description": "Get all stock rewards for a user for today"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Historical INR",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/historical-inr/user123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"historical-inr",
+								"user123"
+							]
+						},
+						"description": "Get INR value of user's stock rewards for all past days (up to yesterday)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stats & Portfolio",
+			"item": [
+				{
+					"name": "Get User Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/stats/user123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"stats",
+								"user123"
+							]
+						},
+						"description": "Get total shares rewarded today (grouped by stock symbol) and current INR value of the user's portfolio"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Portfolio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/portfolio/user123",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"portfolio",
+								"user123"
+							]
+						},
+						"description": "Show holdings per stock symbol with current INR value"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Multiple Users Test",
+			"item": [
+				{
+					"name": "Create Reward - User456",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": \"user456\",\n  \"stock_symbol\": \"HDFC\",\n  \"quantity\": 15.0,\n  \"rewarded_at\": \"2025-11-10T09:00:00Z\",\n  \"idempotency_key\": \"reward-user456-hdfc-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reward"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Portfolio - User456",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/portfolio/user456",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"portfolio",
+								"user456"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

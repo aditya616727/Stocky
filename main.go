@@ -1,51 +1,48 @@
 package main
 
 import (
-	"os"
+	"stocky/config"
+	"stocky/database"
+	"stocky/routes"
+	"stocky/services"
 
-	"github.com/aditya616727/stocky/config"
-	"github.com/aditya616727/stocky/database"
-	"github.com/aditya616727/stocky/repository"
-
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	initLogger()
-	logrus.Info("Starting the Stockey Reward Service . . .")
+	// Load configuration
+	cfg := config.LoadConfig()
 
-	//load config
-	cfg, err := config.Load()
-	if err != nil {
-		logrus.Fatalf("failed to load config: %v", err)
-	}
-	logrus.Infof("loaded configuration for Env: %s", cfg.Server.Enviroment)
-
-	//connect to database
-	if err := database.Connect(&cfg.Database); err != nil {
-		logrus.Fatal("failed to connect to database ")
-
-	}
-	defer database.DB.Close()
-
-	db := database.GetDB()
-
-	//initilize repo
-	RewardRepo := repository.NewRewardRepository(db)
-	stockPriceRepo := repository.NewStockPriceRepository(db)
-	ledgerRepo := repository.NewLedgerRepository(db)
-	holdingRepo := repository.NewHoldingRepository(db)
-	userRepo := repository.NewUserRepository(db)
-
-	stockPriceService := services.NewStockPriceService(stockPriceRepo)
-
-}
-
-func initLogger() {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	logrus.SetOutput(os.Stdout)
+	// Setup logger
+	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetLevel(logrus.InfoLevel)
+
+	// Connect to database
+	db, err := database.Connect(cfg)
+	if err != nil {
+		logrus.Fatalf("Failed to connect to database: %v", err)
+	}
+
+	// Run migrations
+	if err := database.RunMigrations(db); err != nil {
+		logrus.Fatalf("Failed to run migrations: %v", err)
+	}
+
+	// Initialize stock price service
+	priceService := services.NewStockPriceService(db)
+	go priceService.StartPriceUpdater() // Start hourly price updates
+
+	// Setup router
+	router := gin.Default()
+
+	// API routes
+	api := router.Group("/api/v1")
+	routes.SetupRoutes(api, db)
+
+	// Start server
+	logrus.Info("Starting server on :8080")
+	if err := router.Run(":8080"); err != nil {
+		logrus.Fatalf("Failed to start server: %v", err)
+	}
 }
