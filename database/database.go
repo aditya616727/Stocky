@@ -14,7 +14,6 @@ import (
 func Connect(cfg *config.Config) (*gorm.DB, error) {
 	var dsn string
 	if cfg.DBPassword == "" {
-		// Omit password field when it's empty so we don't send password=""
 		dsn = fmt.Sprintf(
 			"host=%s user=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Kolkata",
 			cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort,

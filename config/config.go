@@ -26,10 +26,7 @@ func LoadConfig() *Config {
 		DBHost: getEnv("DB_HOST", "localhost"),
 		DBPort: getEnv("DB_PORT", "5432"),
 		DBUser: getEnv("DB_USER", "postgres"),
-		// Default DB_PASSWORD to empty so that when no password is provided
-		// the DSN omits the password field (see GetDSN()). This allows
-		// connecting to Postgres instances configured to accept passwordless
-		// authentication (e.g., trust/ident on local dev machines).
+
 		DBPassword: getEnv("DB_PASSWORD", ""),
 		DBName:     getEnv("DB_NAME", "assignment"),
 		ServerPort: getEnv("SERVER_PORT", "8080"),
